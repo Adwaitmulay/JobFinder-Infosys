@@ -1,7 +1,70 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5011";
+  import.meta.env.VITE_API_URL || "https://jobfinder-infosys.onrender.com";
+
+const ROLE_OPTIONS = [
+  "Software Developer",
+  "Software Engineer",
+  "Full Stack Developer",
+  "Frontend Developer",
+  "Backend Developer",
+  "Python Developer",
+  "Java Developer",
+  "Java Full Stack Developer",
+  "React Developer",
+  "Data Engineer",
+  "Data Scientist",
+  "AI Engineer",
+  "Machine Learning Engineer",
+  "DevOps Engineer",
+  "Cloud Engineer",
+  "Cybersecurity Engineer",
+  "QA Automation Engineer",
+  "SDET",
+  "Android Developer",
+  "iOS Developer",
+  "Any Role",
+];
+
+const FALLBACK_SKILLS = [
+  "finance and accounting",
+  "java",
+  "azure",
+  "python",
+  "aws",
+  "oracle",
+  "artificial intelligence",
+  "spring boot",
+  "servicenow",
+  "microservices",
+  ".net",
+  "salesforce(sfdc)",
+  "automation testing",
+  "sap",
+  "sql",
+];
+
+const FALLBACK_LOCATIONS = [
+  "Ahmedabad",
+  "Bengaluru",
+  "Bhopal",
+  "Chennai",
+  "Coimbatore",
+  "Delhi",
+  "Hyderabad",
+  "India",
+  "Indore",
+  "Kochi",
+  "Kolkata",
+  "Lucknow",
+  "Mumbai",
+  "Nagpur",
+  "Nashik",
+  "Patna",
+  "Pune",
+  "Visakhapatnam",
+];
 
 const decodeHtmlEntities = (value = "") => {
   const textarea = document.createElement("textarea");
@@ -31,63 +94,108 @@ const cleanJobDescription = (value = "") => {
     .replace(/\s+/g, " ")
     .trim();
 
-  // Keep only the useful job-content part and remove Infosys website navigation/footer text.
-  const usefulStart = text.search(/what we'?re looking for|overview|job description|responsibilities|key responsibilities|about the role/i);
-  if (usefulStart >= 0) {
-    text = text.slice(usefulStart);
-  } else {
-    const detailsStart = text.search(/job details/i);
-    if (detailsStart >= 0) text = text.slice(detailsStart);
-  }
-
-  const stopAt = text.search(/why infosys:|why infosys\b|apply now\s+share company|company\s+navigate your next|navigate your next|copyright ©|privacy statement|cookie policy|safe harbour provision|select country\/region/i);
-  if (stopAt > 0) {
-    text = text.slice(0, stopAt);
-  }
-
-  // Remove common page controls/navigation that can appear before the actual content.
-  text = text
-    .replace(/^(english\s+english\s+spanish\s+portuguese\s+french\s+careers\s+explore opportunities\s+explore life at infy\s+apply now\s+)+/i, "")
-    .replace(/apply now\s+apply now\s+you have successfully copied the job share url to clipboard!/i, "")
-    .replace(/you have successfully copied the job share url to clipboard!/gi, "")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  // Keep the card compact while preserving the useful job requirements.
-  if (text.length > 700) {
-    text = `${text.slice(0, 700).trim()}…`;
-  }
-
   return text || "No description available.";
 };
 
 function App() {
   const [name, setName] = useState("");
-  const [skills, setSkills] = useState("");
+  const [skills, setSkills] = useState([]);
   const [location, setLocation] = useState("Pune");
   const [role, setRole] = useState("Software Developer");
+
+  const [availableSkills, setAvailableSkills] = useState(FALLBACK_SKILLS);
+  const [availableLocations, setAvailableLocations] =
+    useState(FALLBACK_LOCATIONS);
 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [filtersLoading, setFiltersLoading] = useState(true);
+  const [skillsOpen, setSkillsOpen] = useState(false);
+
+  const skillsRef = useRef(null);
+
+  useEffect(() => {
+    const loadFilters = async () => {
+      try {
+        setFiltersLoading(true);
+
+        const response = await fetch(
+          `${API_BASE_URL}/api/job/filters`
+        );
+
+        if (!response.ok) {
+          throw new Error(`Filters request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data?.status) {
+          if (Array.isArray(data.skills) && data.skills.length > 0) {
+            setAvailableSkills(data.skills.slice(0, 15));
+          }
+
+          if (Array.isArray(data.locations) && data.locations.length > 0) {
+            setAvailableLocations(data.locations);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading job filters:", error);
+      } finally {
+        setFiltersLoading(false);
+      }
+    };
+
+    loadFilters();
+  }, []);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        skillsRef.current &&
+        !skillsRef.current.contains(event.target)
+      ) {
+        setSkillsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  const toggleSkill = (skill) => {
+    setSkills((current) => {
+      if (current.includes(skill)) {
+        return current.filter((item) => item !== skill);
+      }
+
+      return [...current, skill];
+    });
+  };
 
   const findJobs = async () => {
     try {
       setLoading(true);
       setSearched(false);
+      setSkillsOpen(false);
+
+      const skillQuery = skills.join(",");
 
       const response = await fetch(
         `${API_BASE_URL}/api/job/match?role=${encodeURIComponent(
           role
         )}&skills=${encodeURIComponent(
-          skills
+          skillQuery
         )}&location=${encodeURIComponent(location)}`
       );
 
       const data = await response.json();
 
-      if (data.status) {
-        setJobs(data.jobs);
+      if (data?.status) {
+        setJobs(Array.isArray(data.jobs) ? data.jobs : []);
       } else {
         setJobs([]);
       }
@@ -102,10 +210,15 @@ function App() {
     }
   };
 
+  const selectedSkillsText =
+    skills.length === 0
+      ? "Select relevant skills"
+      : skills.length === 1
+      ? skills[0]
+      : `${skills.length} skills selected`;
+
   return (
     <div className="app">
-
-      {/* NAVBAR */}
       <nav className="navbar">
         <div className="nav-container">
           <div className="logo">
@@ -116,14 +229,20 @@ function App() {
           <div className="nav-links">
             <a href="#jobs">Find Jobs</a>
             <a href="#profile">Create Profile</a>
-            <button className="nav-button">
+            <button
+              className="nav-button"
+              onClick={() =>
+                document
+                  .getElementById("profile")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
               Get Started
             </button>
           </div>
         </div>
       </nav>
 
-      {/* HERO */}
       <section className="hero">
         <div className="hero-content">
           <div className="hero-badge">
@@ -144,7 +263,7 @@ function App() {
 
           <div className="hero-stats">
             <div>
-              <strong>5+</strong>
+              <strong>2</strong>
               <span>Companies</span>
             </div>
 
@@ -179,7 +298,6 @@ function App() {
         </div>
       </section>
 
-      {/* PROFILE */}
       <section className="profile-section" id="profile">
         <div className="section-heading">
           <div>
@@ -204,7 +322,6 @@ function App() {
           </div>
 
           <div className="form-grid">
-
             <div className="form-group">
               <label>Your Name</label>
               <input
@@ -217,60 +334,89 @@ function App() {
 
             <div className="form-group">
               <label>Preferred Location</label>
-              <input
-                type="text"
+              <select
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="e.g. Pune"
-              />
+                disabled={filtersLoading}
+              >
+                {availableLocations.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="form-group">
+            <div className="form-group" ref={skillsRef}>
               <label>Your Skills</label>
-              <input
-                type="text"
-                value={skills}
-                onChange={(e) => setSkills(e.target.value)}
-                placeholder="e.g. React, JavaScript, Python"
-              />
-              <small>Separate multiple skills with commas</small>
+
+              <button
+                type="button"
+                className={`custom-select ${
+                  skillsOpen ? "custom-select-open" : ""
+                }`}
+                onClick={() => setSkillsOpen((value) => !value)}
+                disabled={filtersLoading}
+              >
+                <span className={skills.length ? "selected-value" : "placeholder-value"}>
+                  {filtersLoading ? "Loading skills..." : selectedSkillsText}
+                </span>
+                <span className="select-arrow">▼</span>
+              </button>
+
+              {skillsOpen && (
+                <div className="skills-dropdown">
+                  <div className="skills-dropdown-header">
+                    <span>Relevant skills</span>
+                    {skills.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setSkills([])}
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+
+                  {availableSkills.map((skill) => (
+                    <label
+                      className="skill-option"
+                      key={skill}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={skills.includes(skill)}
+                        onChange={() => toggleSkill(skill)}
+                      />
+                      <span>{skill}</span>
+                    </label>
+                  ))}
+                </div>
+              )}
+
+              <small>
+                Select one or more relevant skills
+              </small>
             </div>
 
             <div className="form-group">
               <label>Job Role</label>
-              <input
-                type="text"
+
+              <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                placeholder="e.g. Python Developer, AI Engineer, Java Full Stack Developer"
-                list="role-suggestions"
-              />
-              <datalist id="role-suggestions">
-                <option value="Software Developer" />
-                <option value="Software Engineer" />
-                <option value="Full Stack Developer" />
-                <option value="Frontend Developer" />
-                <option value="Backend Developer" />
-                <option value="Python Developer" />
-                <option value="Java Developer" />
-                <option value="Java Full Stack Developer" />
-                <option value="React Developer" />
-                <option value="Data Engineer" />
-                <option value="Data Scientist" />
-                <option value="AI Engineer" />
-                <option value="Machine Learning Engineer" />
-                <option value="DevOps Engineer" />
-                <option value="Cloud Engineer" />
-                <option value="Cybersecurity Engineer" />
-                <option value="QA Automation Engineer" />
-                <option value="SDET" />
-                <option value="Android Developer" />
-                <option value="iOS Developer" />
-                <option value="Any Role" />
-              </datalist>
-              <small>Type any software or IT role. You are not limited to the examples.</small>
-            </div>
+              >
+                {ROLE_OPTIONS.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
 
+              <small>
+                Type or select a software / IT role
+              </small>
+            </div>
           </div>
 
           <button
@@ -293,10 +439,8 @@ function App() {
         </div>
       </section>
 
-      {/* JOB RESULTS */}
       {searched && (
         <section className="jobs-section" id="jobs">
-
           <div className="results-header">
             <div>
               <span className="section-label">JOB RESULTS</span>
@@ -322,10 +466,8 @@ function App() {
             </div>
           ) : (
             <div className="jobs-grid">
-
               {jobs.map((job) => (
                 <div className="job-card" key={job._id}>
-
                   <div className="job-card-header">
                     <div className="company-logo">
                       {job.company?.charAt(0)}
@@ -337,7 +479,6 @@ function App() {
                   </div>
 
                   <div className="job-content">
-
                     <h3>{job.title}</h3>
 
                     <div className="company-name">
@@ -360,7 +501,6 @@ function App() {
                         </span>
                       ))}
                     </div>
-
                   </div>
 
                   <div className="job-card-footer">
@@ -377,16 +517,13 @@ function App() {
                       View Job →
                     </a>
                   </div>
-
                 </div>
               ))}
-
             </div>
           )}
         </section>
       )}
 
-      {/* HOW IT WORKS */}
       <section className="how-section">
         <div className="section-heading center">
           <span className="section-label">HOW IT WORKS</span>
@@ -397,7 +534,6 @@ function App() {
         </div>
 
         <div className="steps">
-
           <div className="step">
             <div className="step-number">01</div>
             <h3>Create Profile</h3>
@@ -421,11 +557,9 @@ function App() {
               Explore matching opportunities and apply directly.
             </p>
           </div>
-
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer>
         <div className="footer-content">
           <div className="logo">
@@ -443,9 +577,7 @@ function App() {
         </div>
       </footer>
 
-      {/* STYLES */}
       <style>{`
-
         * {
           box-sizing: border-box;
           margin: 0;
@@ -463,12 +595,16 @@ function App() {
           color: #172033;
         }
 
+        button,
+        input,
+        select {
+          font: inherit;
+        }
+
         .app {
           min-height: 100vh;
           overflow-x: hidden;
         }
-
-        /* NAVBAR */
 
         .navbar {
           background: rgba(255,255,255,0.96);
@@ -536,8 +672,6 @@ function App() {
           font-weight: 600;
           cursor: pointer;
         }
-
-        /* HERO */
 
         .hero {
           max-width: 1180px;
@@ -663,8 +797,6 @@ function App() {
           bottom: 45px;
         }
 
-        /* PROFILE */
-
         .profile-section,
         .jobs-section {
           max-width: 1080px;
@@ -738,6 +870,7 @@ function App() {
         .form-group {
           display: flex;
           flex-direction: column;
+          position: relative;
         }
 
         .form-group label {
@@ -747,7 +880,8 @@ function App() {
         }
 
         .form-group input,
-        .form-group select {
+        .form-group select,
+        .custom-select {
           width: 100%;
           height: 48px;
           border: 1px solid #dbe2eb;
@@ -761,9 +895,104 @@ function App() {
         }
 
         .form-group input:focus,
-        .form-group select:focus {
+        .form-group select:focus,
+        .custom-select-open {
           border-color: #2563eb;
           box-shadow: 0 0 0 3px rgba(37,99,235,.09);
+        }
+
+        .form-group input:disabled,
+        .form-group select:disabled,
+        .custom-select:disabled {
+          opacity: .65;
+          cursor: wait;
+        }
+
+        .custom-select {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          text-align: left;
+        }
+
+        .selected-value {
+          color: #172033;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .placeholder-value {
+          color: #9aa6b6;
+        }
+
+        .select-arrow {
+          font-size: 11px;
+          color: #394456;
+          margin-left: 12px;
+          transition: transform .2s;
+        }
+
+        .custom-select-open .select-arrow {
+          transform: rotate(180deg);
+        }
+
+        .skills-dropdown {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 76px;
+          background: #202020;
+          color: white;
+          border-radius: 0 0 10px 10px;
+          padding: 10px 8px 8px;
+          max-height: 280px;
+          overflow-y: auto;
+          z-index: 60;
+          box-shadow: 0 18px 35px rgba(0,0,0,.22);
+          border: 1px solid #333;
+        }
+
+        .skills-dropdown-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 6px 10px 10px;
+          font-size: 12px;
+          font-weight: 700;
+          border-bottom: 1px solid #343434;
+          margin-bottom: 3px;
+        }
+
+        .skills-dropdown-header button {
+          border: none;
+          background: none;
+          color: #8eb6ff;
+          font-size: 12px;
+          cursor: pointer;
+        }
+
+        .skill-option {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+          padding: 9px 10px;
+          border-radius: 7px;
+          cursor: pointer;
+          font-size: 13px;
+        }
+
+        .skill-option:hover {
+          background: #2d2d2d;
+        }
+
+        .skill-option input {
+          width: 15px;
+          height: 15px;
+          margin: 0;
+          accent-color: #2563eb;
+          cursor: pointer;
         }
 
         .form-group small {
@@ -814,8 +1043,6 @@ function App() {
             transform: rotate(360deg);
           }
         }
-
-        /* JOBS */
 
         .jobs-section {
           padding-top: 20px;
@@ -983,8 +1210,6 @@ function App() {
           margin-top: 7px;
         }
 
-        /* HOW IT WORKS */
-
         .how-section {
           background: white;
           border-top: 1px solid #e9edf3;
@@ -1027,8 +1252,6 @@ function App() {
           margin-top: 8px;
         }
 
-        /* FOOTER */
-
         footer {
           background: #172033;
           color: white;
@@ -1059,10 +1282,7 @@ function App() {
           font-size: 11px;
         }
 
-        /* RESPONSIVE */
-
         @media (max-width: 800px) {
-
           .nav-links a {
             display: none;
           }
@@ -1110,7 +1330,6 @@ function App() {
         }
 
         @media (max-width: 500px) {
-
           .hero h1 {
             font-size: 43px;
             letter-spacing: -2px;
@@ -1130,8 +1349,13 @@ function App() {
             padding-right: 16px;
           }
 
+          .skills-dropdown {
+            position: fixed;
+            left: 16px;
+            right: 16px;
+            top: 140px;
+          }
         }
-
       `}</style>
     </div>
   );
