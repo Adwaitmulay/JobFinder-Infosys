@@ -2,9 +2,10 @@
 
 import {
   addDemoJobs,
-  matchJobs,
   getJobFilters
 } from "../controllers/job.controller.js";
+
+import { matchJobs } from "../controllers/smartMatch.controller.js";
 
 const router = express.Router();
 
