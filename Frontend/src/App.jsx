@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+﻿import React, { useEffect, useRef, useState } from "react";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "https://jobfinder-infosys.onrender.com";
@@ -87,7 +87,7 @@ const cleanJobDescription = (value = "") => {
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<br\s*\/?\s*>/gi, " ")
-    .replace(/<li\b[^>]*>/gi, " • ")
+    .replace(/<li\b[^>]*>/gi, " â€¢ ")
     .replace(/<\/(p|div|h1|h2|h3|h4|h5|h6|li|ul|ol)>/gi, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/gi, " ")
@@ -186,7 +186,7 @@ function App() {
       const skillQuery = skills.join(",");
 
       const response = await fetch(
-        `${API_BASE_URL}/api/public-job/match?company=${encodeURIComponent(company)}&role=${encodeURIComponent(
+        `${API_BASE_URL}/api/job/match?company=${encodeURIComponent(company)}&role=${encodeURIComponent(
           role
         )}&skills=${encodeURIComponent(
           skillQuery
@@ -247,7 +247,7 @@ function App() {
       <section className="hero">
         <div className="hero-content">
           <div className="hero-badge">
-            <span>✦</span>
+            <span>âœ¦</span>
             Smart job matching for freshers
           </div>
 
@@ -282,12 +282,12 @@ function App() {
 
         <div className="hero-decoration">
           <div className="floating-card card-one">
-            <span>✓</span>
+            <span>âœ“</span>
             Skills matched
           </div>
 
           <div className="floating-card card-two">
-            <span>●</span>
+            <span>â—</span>
             New opportunity
           </div>
 
@@ -312,7 +312,7 @@ function App() {
 
         <div className="profile-card">
           <div className="profile-card-top">
-            <div className="profile-icon">👤</div>
+            <div className="profile-icon">ðŸ‘¤</div>
 
             <div>
               <h3>Create Your Job Profile</h3>
@@ -362,7 +362,7 @@ function App() {
                 <span className={skills.length ? "selected-value" : "placeholder-value"}>
                   {filtersLoading ? "Loading skills..." : selectedSkillsText}
                 </span>
-                <span className="select-arrow">▼</span>
+                <span className="select-arrow">â–¼</span>
               </button>
 
               {skillsOpen && (
@@ -446,7 +446,7 @@ function App() {
             ) : (
               <>
                 Find Matching Jobs
-                <span>→</span>
+                <span>â†’</span>
               </>
             )}
           </button>
@@ -471,7 +471,7 @@ function App() {
 
           {jobs.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">⌕</div>
+              <div className="empty-icon">âŒ•</div>
               <h3>No matching jobs found</h3>
               <p>
                 Try adding more skills or changing your preferred role
@@ -500,8 +500,8 @@ function App() {
                     </div>
 
                     <div className="job-details">
-                      <span>📍 {job.location}</span>
-                      <span>💼 {job.jobType}</span>
+                      <span>ðŸ“ {job.location}</span>
+                      <span>ðŸ’¼ {job.jobType}</span>
                     </div>
 
                     <p className="job-description">
@@ -528,7 +528,7 @@ function App() {
                       rel="noreferrer"
                       className="apply-button"
                     >
-                      View Job →
+                      View Job â†’
                     </a>
                   </div>
                 </div>
@@ -586,7 +586,7 @@ function App() {
           </p>
 
           <span className="footer-copy">
-            © 2026 JobFinder
+            Â© 2026 JobFinder
           </span>
         </div>
       </footer>
@@ -1376,3 +1376,4 @@ function App() {
 }
 
 export default App;
+
