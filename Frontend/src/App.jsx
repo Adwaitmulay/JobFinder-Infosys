@@ -102,6 +102,7 @@ function App() {
   const [skills, setSkills] = useState([]);
   const [location, setLocation] = useState("Pune");
   const [role, setRole] = useState("Software Developer");
+  const [company, setCompany] = useState("All Companies");
 
   const [availableSkills, setAvailableSkills] = useState(FALLBACK_SKILLS);
   const [availableLocations, setAvailableLocations] =
@@ -185,7 +186,7 @@ function App() {
       const skillQuery = skills.join(",");
 
       const response = await fetch(
-        `${API_BASE_URL}/api/job/match?role=${encodeURIComponent(
+        `${API_BASE_URL}/api/public-job/match?company=${encodeURIComponent(company)}&role=${encodeURIComponent(
           role
         )}&skills=${encodeURIComponent(
           skillQuery
@@ -263,7 +264,7 @@ function App() {
 
           <div className="hero-stats">
             <div>
-              <strong>2</strong>
+              <strong>3</strong>
               <span>Companies</span>
             </div>
 
@@ -399,6 +400,19 @@ function App() {
               </small>
             </div>
 
+            <div className="form-group">
+              <label>Company</label>
+              <select
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+              >
+                <option value="All Companies">All Companies</option>
+                <option value="Infosys">Infosys</option>
+                <option value="TCS">TCS</option>
+                <option value="Wipro">Wipro</option>
+              </select>
+              <small>Select the company you want to see</small>
+            </div>
             <div className="form-group">
               <label>Job Role</label>
 
