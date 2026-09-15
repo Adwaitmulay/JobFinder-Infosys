@@ -87,7 +87,7 @@ const cleanJobDescription = (value = "") => {
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<br\s*\/?\s*>/gi, " ")
-    .replace(/<li\b[^>]*>/gi, " • ")
+    .replace(/<li\b[^>]*>/gi, " â€¢ ")
     .replace(/<\/(p|div|h1|h2|h3|h4|h5|h6|li|ul|ol)>/gi, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/gi, " ")
@@ -137,7 +137,7 @@ function App() {
           }
 
           if (Array.isArray(data.locations) && data.locations.length > 0) {
-            setAvailableLocations(data.locations);
+            setAvailableLocations([...new Set(data.locations.flatMap((x) => String(x).split(/\s*[,|]\s*/).map((v) => v.trim()).filter(Boolean)))]);
           }
         }
       } catch (error) {
@@ -186,7 +186,7 @@ function App() {
       const skillQuery = skills.join(",");
 
       const response = await fetch(
-        `${API_BASE_URL}/api/public-job/match?company=${encodeURIComponent(company)}&role=${encodeURIComponent(
+        `${API_BASE_URL}/api/job/match?company=${encodeURIComponent(company)}&role=${encodeURIComponent(
           role
         )}&skills=${encodeURIComponent(
           skillQuery
@@ -471,7 +471,7 @@ function App() {
 
           {jobs.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">⌕</div>
+              <div className="empty-icon">⊗</div>
               <h3>No matching jobs found</h3>
               <p>
                 Try adding more skills or changing your preferred role
@@ -1376,3 +1376,4 @@ function App() {
 }
 
 export default App;
+
