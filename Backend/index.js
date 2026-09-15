@@ -7,7 +7,7 @@ import connectDB from "./utils/db.js";
 import userRoute from "./routes/user.route.js";
 import companyRoute from "./routes/company.route.js";
 import jobRoute from "./routes/job.route.js";
-import applicationRoute from "./routes/application.route.js";`r`nimport publicJobRoute from "./routes/publicJob.route.js";
+import applicationRoute from "./routes/application.route.js";
 
 dotenv.config();
 
@@ -25,7 +25,7 @@ const allowedOrigins = (process.env.CORS_ORIGIN || "*")
 app.use(
   cors({
     origin: allowedOrigins.includes("*") ? "*" : allowedOrigins,
-    credentials: true,
+    credentials: true
   })
 );
 
@@ -34,14 +34,14 @@ const PORT = process.env.PORT || 5001;
 app.get("/", (req, res) => {
   res.json({
     message: "JobFinder Backend is running successfully!",
-    status: true,
+    status: true
   });
 });
 
 app.use("/api/user", userRoute);
 app.use("/api/company", companyRoute);
 app.use("/api/job", jobRoute);
-app.use("/api/application", applicationRoute);`r`napp.use("/api/public-job", publicJobRoute);
+app.use("/api/application", applicationRoute);
 
 app.listen(PORT, () => {
   connectDB();

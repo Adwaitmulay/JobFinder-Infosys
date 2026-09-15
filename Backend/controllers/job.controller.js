@@ -1,72 +1,181 @@
-import { Job } from "../models/job.model.js";
+﻿import { Job } from "../models/job.model.js";
+
+/* --------------------------------------------------------------------------
+   SKILL ALIASES
+-------------------------------------------------------------------------- */
 
 const SKILL_ALIASES = {
-  js: "javascript", javascript: "javascript", ts: "typescript", typescript: "typescript",
-  reactjs: "react", react: "react", node: "node.js", nodejs: "node.js", "node.js": "node.js",
-  cpp: "c++", "c++": "c++", csharp: "c#", "c#": "c#", python: "python", java: "java",
-  sql: "sql", mongodb: "mongodb", mongo: "mongodb", postgres: "postgresql", postgresql: "postgresql",
-  mysql: "mysql", aws: "aws", azure: "azure", gcp: "google cloud", "google cloud": "google cloud",
-  docker: "docker", kubernetes: "kubernetes", git: "git", github: "github", html: "html", css: "css",
-  angular: "angular", vue: "vue.js", "vue.js": "vue.js", next: "next.js", "next.js": "next.js",
-  spring: "spring", "spring boot": "spring boot", django: "django", flask: "flask", fastapi: "fastapi",
-  tensorflow: "tensorflow", pytorch: "pytorch", "machine learning": "machine learning",
-  ml: "machine learning", "artificial intelligence": "artificial intelligence", ai: "artificial intelligence",
-  terraform: "terraform", jenkins: "jenkins", kafka: "kafka", spark: "spark", rust: "rust",
-  go: "go", golang: "go", ruby: "ruby", php: "php", kotlin: "kotlin", swift: "swift", scala: "scala",
-  dart: "dart", flutter: "flutter", "c language": "c", c: "c", ".net": ".net", dotnet: ".net",
-  selenium: "selenium", cypress: "cypress", playwright: "playwright", serviceNow: "servicenow",
-  servicenow: "servicenow", sap: "sap", "sap abap": "sap abap", oracle: "oracle", salesforce: "salesforce",
-  tableau: "tableau", "power bi": "power bi", linux: "linux", unix: "unix", bash: "bash",
-  powershell: "powershell", redis: "redis", cassandra: "cassandra", snowflake: "snowflake",
-  databricks: "databricks", hadoop: "hadoop", airflow: "airflow", etl: "etl", graphql: "graphql",
-  grpc: "grpc", rest: "rest", "rest api": "rest api", microservices: "microservices", devops: "devops",
-  devsecops: "devsecops", sre: "sre", cybersecurity: "cybersecurity", "information security": "information security",
-  android: "android", ios: "ios", "react native": "react native", "objective-c": "objective-c",
-  "test automation": "test automation", "api testing": "api testing", "data science": "data science",
-  "data engineering": "data engineering", llm: "llm", nlp: "nlp", "generative ai": "generative ai",
+  js: "javascript",
+  javascript: "javascript",
+  javascriptjs: "javascript",
+  ts: "typescript",
+  typescript: "typescript",
+  reactjs: "react",
+  "react.js": "react",
+  react: "react",
+  node: "node.js",
+  nodejs: "node.js",
+  "node.js": "node.js",
+  cpp: "c++",
+  "c++": "c++",
+  cplusplus: "c++",
+  csharp: "c#",
+  "c#": "c#",
+  mongo: "mongodb",
+  mongodb: "mongodb",
+  postgres: "postgresql",
+  postgresql: "postgresql",
+  mysql: "mysql",
+  aws: "aws",
+  azure: "azure",
+  gcp: "google cloud",
+  "google cloud": "google cloud",
+  angularjs: "angular",
+  angular: "angular",
+  vue: "vue.js",
+  "vue.js": "vue.js",
+  next: "next.js",
+  "next.js": "next.js",
+  spring: "spring",
+  "spring boot": "spring boot",
+  python: "python",
+  java: "java",
+  sql: "sql",
+  ".net": ".net",
+  dotnet: ".net",
+  ml: "machine learning",
+  "machine learning": "machine learning",
+  ai: "artificial intelligence",
+  "artificial intelligence": "artificial intelligence",
+  "generative ai": "generative ai",
+  genai: "generative ai",
+  "cyber security": "cybersecurity",
+  cybersecurity: "cybersecurity",
+  "service now": "servicenow",
+  servicenow: "servicenow",
+  powerbi: "power bi",
+  "power bi": "power bi",
+  golang: "go",
+  go: "go"
 };
 
-const TECH_TERMS = Object.values(SKILL_ALIASES).filter((value, index, arr) => arr.indexOf(value) === index);
+/* --------------------------------------------------------------------------
+   STATE / CITY DATA
+-------------------------------------------------------------------------- */
 
-const ROLE_GROUPS = [
-  ["full stack", ["full stack", "fullstack"]],
-  ["frontend", ["frontend", "front end", "ui developer", "ui engineer"]],
-  ["backend", ["backend", "back end", "api developer", "server developer"]],
-  ["devops", ["devops", "dev sec ops", "site reliability", "sre", "platform engineer"]],
-  ["cloud", ["cloud engineer", "cloud developer", "cloud architect", "cloud consultant"]],
-  ["data engineer", ["data engineer", "data engineering"]],
-  ["data scientist", ["data scientist", "data science"]],
-  ["machine learning", ["machine learning", "ml engineer", "ml developer"]],
-  ["ai", ["ai engineer", "ai developer", "artificial intelligence", "genai", "generative ai"]],
-  ["security", ["security engineer", "cybersecurity", "cyber security", "application security", "information security"]],
-  ["qa", ["qa", "quality assurance", "test engineer", "test automation", "automation testing", "sdet"]],
-  ["mobile", ["mobile developer", "mobile engineer", "mobile development"]],
-  ["android", ["android developer", "android engineer"]],
-  ["ios", ["ios developer", "ios engineer"]],
-  ["embedded", ["embedded engineer", "embedded developer", "firmware engineer"]],
-  ["database", ["database developer", "database engineer", "database administrator", "dba"]],
-  ["network", ["network engineer", "network administrator", "network security"]],
-  ["software", ["software developer", "software engineer", "software development", "software engineering", "programmer"]],
-];
+const INDIA_STATE_LOCATIONS = {
+  "andhra pradesh": [
+    "amaravati",
+    "anantapur",
+    "guntur",
+    "kakinada",
+    "nellore",
+    "tirupati",
+    "vijayawada",
+    "visakhapatnam",
+    "vizag"
+  ],
+  assam: ["guwahati"],
+  bihar: ["patna"],
+  chhattisgarh: ["bhilai", "bilaspur", "raipur"],
+  goa: ["goa", "panaji"],
+  gujarat: [
+    "ahmedabad",
+    "gandhinagar",
+    "rajkot",
+    "surat",
+    "vadodara",
+    "baroda"
+  ],
+  haryana: ["gurgaon", "gurugram", "faridabad", "panipat"],
+  jharkhand: ["ranchi", "jamshedpur"],
+  karnataka: [
+    "bengaluru",
+    "bangalore",
+    "mysore",
+    "mysuru",
+    "mangalore",
+    "hubli",
+    "hubballi"
+  ],
+  kerala: [
+    "kochi",
+    "cochin",
+    "thiruvananthapuram",
+    "trivandrum",
+    "kozhikode",
+    "calicut"
+  ],
+  "madhya pradesh": [
+    "bhopal",
+    "indore",
+    "jabalpur",
+    "gwalior"
+  ],
+  maharashtra: [
+    "mumbai",
+    "pune",
+    "nagpur",
+    "nashik",
+    "navi mumbai",
+    "thane",
+    "aurangabad",
+    "chhatrapati sambhajinagar"
+  ],
+  odisha: ["bhubaneswar", "cuttack"],
+  punjab: ["amritsar", "ludhiana", "mohali", "chandigarh"],
+  rajasthan: ["jaipur", "jodhpur", "udaipur", "kota"],
+  "tamil nadu": [
+    "chennai",
+    "coimbatore",
+    "madurai",
+    "salem",
+    "tiruchirappalli",
+    "trichy"
+  ],
+  telangana: ["hyderabad", "warangal"],
+  "uttar pradesh": [
+    "noida",
+    "lucknow",
+    "kanpur",
+    "agra",
+    "varanasi",
+    "ghaziabad",
+    "meerut"
+  ],
+  uttarakhand: ["dehradun", "haridwar"],
+  "west bengal": ["kolkata", "howrah", "durgapur"],
+  delhi: ["delhi", "new delhi"],
+  "jammu and kashmir": ["jammu", "srinagar"],
+  puducherry: ["puducherry", "pondicherry"],
+  chandigarh: ["chandigarh"]
+};
 
-const STRONG_ROLE_WORDS = [
-  "developer", "engineer", "programmer", "architect", "scientist", "administrator", "analyst",
-  "tester", "consultant", "specialist", "lead", "technical", "technology", "devops", "sre",
-  "designer", "support", "database", "network", "security", "qa", "sdet",
-];
+const STATE_ALIASES = {
+  ap: "andhra pradesh",
+  mp: "madhya pradesh",
+  up: "uttar pradesh",
+  arunachal: "arunachal pradesh",
+  himachal: "himachal pradesh",
+  tamilnadu: "tamil nadu",
+  orissa: "odisha",
+  bengal: "west bengal",
+  jammu: "jammu and kashmir",
+  kashmir: "jammu and kashmir",
+  newdelhi: "delhi",
+  pondicherry: "puducherry"
+};
 
-const STRONG_NON_TECH_TITLE_WORDS = [
-  "sales", "marketing", "recruiter", "recruitment", "human resources", "finance", "legal",
-  "account manager", "client partner", "business development", "customer service representative",
-  "procurement", "payroll", "administrative assistant",
-];
+/* --------------------------------------------------------------------------
+   NORMALIZATION
+-------------------------------------------------------------------------- */
 
 function normalize(value = "") {
   return String(value)
     .toLowerCase()
-    .replace(/[–—]/g, "-")
+    .replace(/[â€“â€”]/g, "-")
+    .replace(/[_/\\]+/g, " ")
     .replace(/&/g, " and ")
-    .replace(/[_/|]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -76,249 +185,813 @@ function normalizeSkill(value = "") {
   return SKILL_ALIASES[key] || key;
 }
 
-function skillRegex(skill) {
-  const escaped = normalizeSkill(skill).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp(`(^|[^a-z0-9+#.])${escaped}($|[^a-z0-9+#.])`, "i");
-}
+/* --------------------------------------------------------------------------
+   SKILL MATCHING
+-------------------------------------------------------------------------- */
 
 function skillExistsInText(skill, text) {
-  if (!skill || !text) return false;
-  const normalized = normalizeSkill(skill);
+  if (!skill || !text) {
+    return false;
+  }
+
+  const wanted = normalizeSkill(skill);
   const value = normalize(text);
 
-  if (normalized === "c++") return /(^|[^a-z0-9])c\+\+([^a-z0-9]|$)/i.test(value);
-  if (normalized === "c#") return /(^|[^a-z0-9])c#([^a-z0-9]|$)/i.test(value);
-  if (normalized === ".net") return /(^|[^a-z0-9])\.net([^a-z0-9]|$)|\bdotnet\b/i.test(value);
-  if (normalized === "node.js") return /\bnode(?:\.js|js)?\b/i.test(value);
-  if (normalized === "next.js") return /\bnext(?:\.js|js)?\b/i.test(value);
-  if (normalized === "vue.js") return /\bvue(?:\.js|js)?\b/i.test(value);
-  if (normalized === "google cloud") return /google\s+cloud|\bgcp\b/i.test(value);
-  if (normalized === "machine learning") return /machine\s+learning|\bml\b/i.test(value);
-  if (normalized === "artificial intelligence") return /artificial\s+intelligence|\bai\b/i.test(value);
-  if (normalized === "c") return /(^|[^a-z0-9+#])c([^a-z0-9+#]|$)/i.test(value);
-  if (normalized === "go") return /(^|[^a-z0-9+#])go([^a-z0-9+#]|$)/i.test(value);
+  if (wanted === "c++") {
+    return /(^|[^a-z0-9])c\+\+([^a-z0-9]|$)/i.test(value);
+  }
 
-  return skillRegex(normalized).test(value);
+  if (wanted === "c#") {
+    return /(^|[^a-z0-9])c#([^a-z0-9]|$)/i.test(value);
+  }
+
+  if (wanted === ".net") {
+    return (
+      /(^|[^a-z0-9])\.net([^a-z0-9]|$)/i.test(value) ||
+      /\bdotnet\b/i.test(value)
+    );
+  }
+
+  if (wanted === "node.js") {
+    return /\bnode(?:\.js|js)?\b/i.test(value);
+  }
+
+  if (wanted === "react") {
+    return /\breact(?:\.js|js)?\b/i.test(value);
+  }
+
+  if (wanted === "angular") {
+    return /\bangular(?:js)?\b/i.test(value);
+  }
+
+  if (wanted === "vue.js") {
+    return /\bvue(?:\.js|js)?\b/i.test(value);
+  }
+
+  if (wanted === "next.js") {
+    return /\bnext(?:\.js|js)?\b/i.test(value);
+  }
+
+  if (wanted === "google cloud") {
+    return (
+      /\bgoogle cloud\b/i.test(value) ||
+      /\bgcp\b/i.test(value)
+    );
+  }
+
+  if (wanted === "machine learning") {
+    return (
+      /\bmachine learning\b/i.test(value) ||
+      /\bml\b/i.test(value)
+    );
+  }
+
+  if (wanted === "artificial intelligence") {
+    return (
+      /\bartificial intelligence\b/i.test(value) ||
+      /\bai\b/i.test(value)
+    );
+  }
+
+  if (wanted === "cybersecurity") {
+    return (
+      /\bcybersecurity\b/i.test(value) ||
+      /\bcyber security\b/i.test(value)
+    );
+  }
+
+  const escaped = wanted.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  return new RegExp(
+    `(^|[^a-z0-9+#.])${escaped}($|[^a-z0-9+#.])`,
+    "i"
+  ).test(value);
 }
+
+/* --------------------------------------------------------------------------
+   USER SKILLS
+-------------------------------------------------------------------------- */
 
 function parseSkills(value = "") {
-  return String(value)
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean)
-    .map(normalizeSkill)
-    .filter((item, index, array) => array.indexOf(item) === index);
+  return [
+    ...new Set(
+      String(value)
+        .split(",")
+        .map(normalizeSkill)
+        .filter(Boolean)
+    )
+  ];
 }
 
-function extractRoleGroups(role) {
-  const value = normalize(role);
-  return ROLE_GROUPS.filter(([, phrases]) => phrases.some((phrase) => value.includes(phrase))).map(([name]) => name);
+/* --------------------------------------------------------------------------
+   STORED JOB SKILLS
+   IMPORTANT:
+   ONLY MongoDB job.skills is used.
+   Nothing is extracted from title, role or description.
+-------------------------------------------------------------------------- */
+
+function getStoredJobSkills(job) {
+  if (!Array.isArray(job.skills)) {
+    return [];
+  }
+
+  return [
+    ...new Set(
+      job.skills
+        .map((skill) => String(skill || "").trim())
+        .filter(Boolean)
+    )
+  ];
 }
 
-function extractTechTerms(role) {
-  const value = normalize(role);
-  return TECH_TERMS.filter((term) => skillExistsInText(term, value));
-}
+/* --------------------------------------------------------------------------
+   ROLE MATCHING
+-------------------------------------------------------------------------- */
 
-function meaningfulRoleTokens(role) {
-  const stop = new Set(["a", "an", "the", "and", "or", "for", "with", "in", "on", "of", "to", "at", "any"]);
-  return normalize(role)
-    .split(" ")
-    .filter((token) => token.length > 1 && !stop.has(token));
-}
-
-function titleIsStronglyNonTechnical(title) {
-  const value = normalize(title);
-  return STRONG_NON_TECH_TITLE_WORDS.some((word) => value.includes(word));
-}
-
-function roleMatch(job, requestedRole) {
+function roleScore(job, requestedRole) {
   const requested = normalize(requestedRole);
-  if (!requested || requested === "any role" || requested === "any") {
-    return { score: 0, matchedRoleTerms: [] };
+
+  if (
+    !requested ||
+    requested === "any" ||
+    requested === "any role"
+  ) {
+    return {
+      score: 0,
+      matched: []
+    };
   }
 
   const title = normalize(job.title || "");
   const storedRole = normalize(job.role || "");
-  const skills = Array.isArray(job.skills) ? job.skills : [];
-  const skillText = normalize(skills.join(" "));
-  const roleText = `${title} ${storedRole}`;
-  const combined = `${roleText} ${skillText}`;
-  const groups = extractRoleGroups(requested);
-  const techTerms = extractTechTerms(requested);
-  const tokens = meaningfulRoleTokens(requested);
-  const matchedRoleTerms = [];
+  const text = `${title} ${storedRole}`;
 
-  if (title === requested || title.includes(requested)) {
-    return { score: 70, matchedRoleTerms: [requested] };
+  const matched = [];
+
+  if (title === requested) {
+    return {
+      score: 100,
+      matched: [requested]
+    };
   }
+
+  if (title.includes(requested)) {
+    return {
+      score: 92,
+      matched: [requested]
+    };
+  }
+
+  const requestedWords = requested
+    .split(" ")
+    .filter((word) => word.length >= 3);
 
   let score = 0;
 
-  for (const term of tokens) {
-    if (term.length >= 3 && roleText.includes(term)) {
-      score += 10;
-      matchedRoleTerms.push(term);
+  for (const word of requestedWords) {
+    if (text.includes(word)) {
+      score += 12;
+      matched.push(word);
     }
   }
 
-  for (const tech of techTerms) {
-    if (skillExistsInText(tech, combined)) {
-      score += 18;
-      matchedRoleTerms.push(tech);
+  const roleFamilies = [
+    [
+      "software",
+      ["software", "developer", "engineer", "programmer"]
+    ],
+    [
+      "frontend",
+      ["frontend", "front end", "ui", "react"]
+    ],
+    [
+      "backend",
+      ["backend", "back end", "api", "server"]
+    ],
+    [
+      "full stack",
+      ["full stack", "fullstack"]
+    ],
+    [
+      "data",
+      ["data", "analytics", "analyst"]
+    ],
+    [
+      "cloud",
+      ["cloud"]
+    ],
+    [
+      "devops",
+      ["devops", "sre", "platform"]
+    ],
+    [
+      "security",
+      ["security", "cyber"]
+    ],
+    [
+      "testing",
+      ["test", "qa", "quality"]
+    ]
+  ];
+
+  for (const [family, words] of roleFamilies) {
+    const requestedFamily = words.some((word) =>
+      requested.includes(word)
+    );
+
+    const jobFamily = words.some((word) =>
+      text.includes(word)
+    );
+
+    if (requestedFamily && jobFamily) {
+      score += 25;
+      matched.push(family);
     }
   }
 
-  for (const group of groups) {
-    const definition = ROLE_GROUPS.find(([name]) => name === group)?.[1] || [];
-    if (definition.some((phrase) => roleText.includes(normalize(phrase)))) {
-      score += 28;
-      matchedRoleTerms.push(group);
-    } else if (group === "software" && /software|developer|engineer|programmer|technology consultant|technology analyst/.test(roleText)) {
-      score += 22;
-      matchedRoleTerms.push(group);
-    } else if (group === "frontend" && (skillExistsInText("react", combined) || skillExistsInText("javascript", combined) || /ui|front end|frontend/.test(roleText))) {
-      score += 18;
-      matchedRoleTerms.push(group);
-    } else if (group === "backend" && (skillExistsInText("node.js", combined) || skillExistsInText("java", combined) || /api|backend|back end|server/.test(roleText))) {
-      score += 18;
-      matchedRoleTerms.push(group);
-    }
-  }
-
-  const requestedNeedsTechnicalRole = STRONG_ROLE_WORDS.some((word) => requested.includes(word));
-  const jobLooksLikeTechnicalRole = STRONG_ROLE_WORDS.some((word) => roleText.includes(word));
-
-  if (requestedNeedsTechnicalRole && !jobLooksLikeTechnicalRole) {
-    score -= 35;
-  }
-
-  if (titleIsStronglyNonTechnical(title) && requestedNeedsTechnicalRole && !title.includes("technical")) {
-    score = Math.min(score, 10);
-  }
-
-  if (techTerms.length > 0 && techTerms.every((term) => !skillExistsInText(term, combined))) {
-    return { score: 0, matchedRoleTerms: [] };
-  }
-
-  score = Math.max(0, Math.min(70, score));
-  return { score, matchedRoleTerms: [...new Set(matchedRoleTerms)] };
+  return {
+    score: Math.min(100, score),
+    matched: [...new Set(matched)]
+  };
 }
 
-function locationScore(jobLocation = "", requestedLocation = "") {
-  const requested = normalize(requestedLocation);
+/* --------------------------------------------------------------------------
+   STATE
+-------------------------------------------------------------------------- */
+
+function normalizeState(value = "") {
+  const normalized = normalize(value);
+
+  return STATE_ALIASES[normalized] || normalized;
+}
+
+function getStateFromLocation(location = "") {
+  const value = normalize(location);
+
+  for (const [state, cities] of Object.entries(
+    INDIA_STATE_LOCATIONS
+  )) {
+    if (value.includes(state)) {
+      return state;
+    }
+
+    if (
+      cities.some((city) =>
+        value.includes(normalize(city))
+      )
+    ) {
+      return state;
+    }
+  }
+
+  return null;
+}
+
+/* --------------------------------------------------------------------------
+   LOCATION MATCHING
+-------------------------------------------------------------------------- */
+
+function locationMatch(jobLocation, requestedLocation) {
   const actual = normalize(jobLocation);
-  if (!requested || !actual) return 0;
-  if (actual.includes(requested)) return 15;
+  const requested = normalize(requestedLocation);
 
-  const parts = requested.split(" ").filter((part) => part.length >= 3);
-  const matches = parts.filter((part) => actual.includes(part));
-  if (matches.length === parts.length && parts.length) return 12;
-  if (matches.length > 0) return 7;
-  return 0;
+  if (!requested) {
+    return {
+      matched: true,
+      score: 0,
+      type: "none",
+      state: getStateFromLocation(actual)
+    };
+  }
+
+  if (
+    requested === "india" ||
+    requested === "pan india" ||
+    requested === "all india"
+  ) {
+    return {
+      matched: true,
+      score: 15,
+      type: "india",
+      state: null
+    };
+  }
+
+  if (
+    actual === requested ||
+    actual.includes(requested)
+  ) {
+    return {
+      matched: true,
+      score: 40,
+      type: "exact",
+      state: getStateFromLocation(actual)
+    };
+  }
+
+  const requestedState = normalizeState(requested);
+  const cities = INDIA_STATE_LOCATIONS[requestedState];
+
+  if (cities) {
+    if (
+      cities.some((city) =>
+        actual.includes(normalize(city))
+      )
+    ) {
+      return {
+        matched: true,
+        score: 30,
+        type: "state",
+        state: requestedState
+      };
+    }
+
+    if (actual.includes(requestedState)) {
+      return {
+        matched: true,
+        score: 30,
+        type: "state",
+        state: requestedState
+      };
+    }
+  }
+
+  const actualState = getStateFromLocation(actual);
+
+  if (
+    actualState &&
+    actualState === requestedState
+  ) {
+    return {
+      matched: true,
+      score: 30,
+      type: "state",
+      state: actualState
+    };
+  }
+
+  const requestedWords = requested
+    .split(" ")
+    .filter((word) => word.length >= 3);
+
+  if (requestedWords.length) {
+    const matches = requestedWords.filter((word) =>
+      actual.includes(word)
+    );
+
+    if (
+      matches.length === requestedWords.length
+    ) {
+      return {
+        matched: true,
+        score: 25,
+        type: "partial",
+        state: actualState
+      };
+    }
+  }
+
+  return {
+    matched: false,
+    score: 0,
+    type: "none",
+    state: actualState
+  };
 }
 
-function cleanDescriptionForResponse(value = "") {
-  let text = String(value || "");
-  for (let i = 0; i < 3; i += 1) {
-    const decoded = text
-      .replace(/&lt;/gi, "<")
-      .replace(/&gt;/gi, ">")
-      .replace(/&amp;/gi, "&")
-      .replace(/&quot;/gi, '"')
-      .replace(/&#39;/gi, "'")
-      .replace(/&nbsp;/gi, " ");
-    if (decoded === text) break;
-    text = decoded;
-  }
-  return text
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<br\s*\/?>(\r?\n)?/gi, " ")
+/* --------------------------------------------------------------------------
+   DESCRIPTION CLEANUP
+-------------------------------------------------------------------------- */
+
+function cleanDescription(value = "") {
+  return String(value || "")
+    .replace(
+      /<script[\s\S]*?<\/script>/gi,
+      " "
+    )
+    .replace(
+      /<style[\s\S]*?<\/style>/gi,
+      " "
+    )
     .replace(/<[^>]+>/g, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&nbsp;/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
 
+/* --------------------------------------------------------------------------
+   DEMO JOBS
+-------------------------------------------------------------------------- */
+
 const addDemoJobs = async (req, res) => {
   return res.status(410).json({
     status: false,
-    message: "Demo jobs are disabled. JobFinder uses official company career jobs only.",
+    message:
+      "Demo jobs are disabled. JobFinder uses official company career jobs only."
   });
 };
 
+/* --------------------------------------------------------------------------
+   FILTER DATA
+   GET /api/job/filters
+
+   Returns ONLY the 15 most relevant skills actually stored
+   in active jobs.
+-------------------------------------------------------------------------- */
+
+const getJobFilters = async (req, res) => {
+  try {
+    const jobs = await Job.find({
+      isActive: true,
+      sourceType: "official_company_careers"
+    })
+      .select("skills location company")
+      .lean();
+
+    const skillCounts = new Map();
+    const locations = new Set();
+    const states = new Set();
+    const companies = new Set();
+
+    for (const job of jobs) {
+      if (job.company) {
+        companies.add(String(job.company).trim());
+      }
+
+      if (job.location) {
+        const location = String(job.location).trim();
+
+        if (location) {
+          locations.add(location);
+
+          const state = getStateFromLocation(location);
+
+          if (state) {
+            states.add(state);
+          }
+        }
+      }
+
+      const storedSkills = getStoredJobSkills(job);
+
+      for (const skill of storedSkills) {
+        const key = normalizeSkill(skill);
+
+        if (!key) {
+          continue;
+        }
+
+        skillCounts.set(
+          key,
+          (skillCounts.get(key) || 0) + 1
+        );
+      }
+    }
+
+    const finalSkills = [...skillCounts.entries()]
+      .sort((a, b) => {
+        if (b[1] !== a[1]) {
+          return b[1] - a[1];
+        }
+
+        return a[0].localeCompare(a[0]);
+      })
+      .slice(0, 15)
+      .map(([skill]) => skill);
+
+    const finalLocations = [...locations]
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b));
+
+    const finalStates = [...states]
+      .sort((a, b) => a.localeCompare(b));
+
+    const finalCompanies = [...companies]
+      .sort((a, b) => a.localeCompare(b));
+
+    return res.status(200).json({
+      status: true,
+      totalActiveJobs: jobs.length,
+
+      totalSkills: finalSkills.length,
+
+      totalLocations: finalLocations.length,
+
+      totalStates: finalStates.length,
+
+      totalCompanies: finalCompanies.length,
+
+      skills: finalSkills,
+
+      locations: finalLocations,
+
+      states: finalStates,
+
+      companies: finalCompanies
+    });
+  } catch (error) {
+    console.error(
+      "Get job filters error:",
+      error
+    );
+
+    return res.status(500).json({
+      status: false,
+      message: "Failed to load job filters.",
+      error: error.message
+    });
+  }
+};
+
+/* --------------------------------------------------------------------------
+   MATCH JOBS
+-------------------------------------------------------------------------- */
+
 const matchJobs = async (req, res) => {
   try {
-    const requestedSkills = parseSkills(req.query.skills || "");
-    const requestedRole = String(req.query.role || "").trim();
-    const requestedLocation = String(req.query.location || "").trim();
+    const requestedRole = String(
+      req.query.role || ""
+    ).trim();
+
+    const requestedSkills = parseSkills(
+      req.query.skills || ""
+    );
+
+    const requestedState = String(
+      req.query.state || ""
+    ).trim();
+
+    const requestedLocation = String(
+      req.query.location || ""
+    ).trim();
+
+    const finalLocation =
+      requestedState || requestedLocation;
 
     const jobs = await Job.find({
       isActive: true,
-      sourceType: "official_company_careers",
+      sourceType: "official_company_careers"
     }).lean();
 
     const results = [];
 
     for (const job of jobs) {
-      const storedSkills = Array.isArray(job.skills) ? job.skills : [];
-      const matchText = `${job.title || ""} ${job.role || ""} ${storedSkills.join(" ")}`;
-      const matchedSkills = requestedSkills.filter((skill) => skillExistsInText(skill, matchText));
+      /* ----------------------------------------------------------------------
+         ONLY STORED SKILLS
+      ---------------------------------------------------------------------- */
 
-      if (requestedSkills.length && matchedSkills.length === 0) continue;
+      const storedJobSkills =
+        getStoredJobSkills(job);
 
-      const role = roleMatch(job, requestedRole);
-      if (requestedRole && !["any role", "any"].includes(normalize(requestedRole)) && role.score < 15) continue;
+      /* ----------------------------------------------------------------------
+         SKILL MATCH
+      ---------------------------------------------------------------------- */
 
-      const locScore = locationScore(job.location, requestedLocation);
+      const matchedSkills =
+        requestedSkills.filter(
+          (requestedSkill) =>
+            storedJobSkills.some(
+              (storedSkill) =>
+                normalizeSkill(storedSkill) ===
+                normalizeSkill(requestedSkill)
+            )
+        );
+
+      if (
+        requestedSkills.length > 0 &&
+        matchedSkills.length === 0
+      ) {
+        continue;
+      }
+
+      const skillPercentage =
+        requestedSkills.length
+          ? Math.round(
+              (matchedSkills.length /
+                requestedSkills.length) *
+                100
+            )
+          : 0;
+
+      /* ----------------------------------------------------------------------
+         ROLE MATCH
+      ---------------------------------------------------------------------- */
+
+      const role = roleScore(
+        job,
+        requestedRole
+      );
+
+      const hasRole =
+        requestedRole &&
+        !["any", "any role"].includes(
+          normalize(requestedRole)
+        );
+
+      if (
+        hasRole &&
+        role.score < 15
+      ) {
+        continue;
+      }
+
+      /* ----------------------------------------------------------------------
+         LOCATION
+      ---------------------------------------------------------------------- */
+
+      const location = locationMatch(
+        job.location,
+        finalLocation
+      );
+
+      if (
+        finalLocation &&
+        !location.matched
+      ) {
+        continue;
+      }
+
+      /* ----------------------------------------------------------------------
+         FINAL SCORE
+
+         Role     = 55
+         Skills   = 30
+         Location = 15
+      ---------------------------------------------------------------------- */
 
       let score = 0;
-      if (requestedRole && !["any role", "any"].includes(normalize(requestedRole))) {
-        score += Math.round((role.score / 70) * 60);
-      } else if (requestedSkills.length) {
-        score += Math.round((matchedSkills.length / requestedSkills.length) * 85);
-      } else {
+
+      if (hasRole) {
+        score += Math.round(
+          (role.score / 100) * 55
+        );
+      }
+
+      if (requestedSkills.length) {
+        score += Math.round(
+          (skillPercentage / 100) * 30
+        );
+      } else if (!hasRole) {
         score += 70;
       }
 
-      if (requestedSkills.length && requestedRole && !["any role", "any"].includes(normalize(requestedRole))) {
-        score += Math.round((matchedSkills.length / requestedSkills.length) * 25);
+      if (finalLocation) {
+        score += Math.round(
+          (location.score / 40) * 15
+        );
       }
 
-      score += locScore;
-      score = Math.min(100, score);
+      if (matchedSkills.length >= 2) {
+        score += 3;
+      }
+
+      if (matchedSkills.length >= 4) {
+        score += 2;
+      }
+
+      score = Math.min(
+        100,
+        Math.max(0, score)
+      );
 
       results.push({
         ...job,
-        description: cleanDescriptionForResponse(job.description),
-        skills: storedSkills,
+
+        description:
+          cleanDescription(
+            job.description
+          ),
+
+        skills: storedJobSkills,
+
         matchedSkills,
-        matchedRoleTerms: role.matchedRoleTerms,
-        locationMatched: locScore > 0,
-        matchScore: score,
+
+        skillMatchCount:
+          matchedSkills.length,
+
+        skillMatchPercentage:
+          skillPercentage,
+
+        matchedRoleTerms:
+          role.matched,
+
+        roleMatchScore:
+          role.score,
+
+        locationMatched:
+          location.matched,
+
+        locationMatchType:
+          location.type,
+
+        locationScore:
+          location.score,
+
+        detectedJobState:
+          location.state,
+
+        selectedState:
+          requestedState
+            ? normalizeState(
+                requestedState
+              )
+            : null,
+
+        matchScore: score
       });
     }
 
+    /* ----------------------------------------------------------------------
+       BEST JOBS FIRST
+    ---------------------------------------------------------------------- */
+
     results.sort((a, b) => {
-      if (b.matchScore !== a.matchScore) return b.matchScore - a.matchScore;
-      if (Boolean(b.locationMatched) !== Boolean(a.locationMatched)) return b.locationMatched ? 1 : -1;
-      return new Date(b.lastSeenAt || 0) - new Date(a.lastSeenAt || 0);
+      if (
+        b.skillMatchPercentage !==
+        a.skillMatchPercentage
+      ) {
+        return (
+          b.skillMatchPercentage -
+          a.skillMatchPercentage
+        );
+      }
+
+      if (
+        b.matchScore !==
+        a.matchScore
+      ) {
+        return (
+          b.matchScore -
+          a.matchScore
+        );
+      }
+
+      if (
+        b.roleMatchScore !==
+        a.roleMatchScore
+      ) {
+        return (
+          b.roleMatchScore -
+          a.roleMatchScore
+        );
+      }
+
+      return (
+        new Date(
+          b.lastSeenAt || 0
+        ) -
+        new Date(
+          a.lastSeenAt || 0
+        )
+      );
     });
 
     return res.status(200).json({
       status: true,
+
       count: results.length,
-      sourcePolicy: "official company career pages only",
-      jobs: results,
+
+      sourcePolicy:
+        "official company career pages only",
+
+      filters: {
+        role:
+          requestedRole || null,
+
+        skills:
+          requestedSkills,
+
+        state:
+          requestedState
+            ? normalizeState(
+                requestedState
+              )
+            : null,
+
+        location:
+          requestedLocation || null
+      },
+
+      jobs: results
     });
   } catch (error) {
-    console.error("Match jobs error:", error);
+    console.error(
+      "Match jobs error:",
+      error
+    );
+
     return res.status(500).json({
       status: false,
-      message: "Failed to find matching jobs.",
-      error: error.message,
+      message:
+        "Failed to find matching jobs.",
+      error: error.message
     });
   }
 };
 
-export { addDemoJobs, matchJobs };
+export {
+  addDemoJobs,
+  matchJobs,
+  getJobFilters
+};
