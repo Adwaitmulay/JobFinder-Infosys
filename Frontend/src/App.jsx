@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "https://jobfinder-infosys.onrender.com";
@@ -87,7 +87,7 @@ const cleanJobDescription = (value = "") => {
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<br\s*\/?\s*>/gi, " ")
-    .replace(/<li\b[^>]*>/gi, " â€¢ ")
+    .replace(/<li\b[^>]*>/gi, " • ")
     .replace(/<\/(p|div|h1|h2|h3|h4|h5|h6|li|ul|ol)>/gi, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/gi, " ")
@@ -186,7 +186,7 @@ function App() {
       const skillQuery = skills.join(",");
 
       const response = await fetch(
-        `${API_BASE_URL}/api/job/match?company=${encodeURIComponent(company)}&role=${encodeURIComponent(
+        `${API_BASE_URL}/api/public-job/match?company=${encodeURIComponent(company)}&role=${encodeURIComponent(
           role
         )}&skills=${encodeURIComponent(
           skillQuery
@@ -219,7 +219,18 @@ function App() {
       : `${skills.length} skills selected`;
 
   return (
-    <div className="app"> &gt; <nav className="navbar"> &gt; <div className="nav-container"> &gt; <div className="logo"> &gt; <div className="logo-icon">J</div> &gt; <span>JobFinder</span> &gt; </div> &gt; <div className="nav-links"> &gt; <a href="#jobs">Find Jobs</a> &gt; <a href="#profile">Create Profile</a> &gt; <button
+    <div className="app">
+      <nav className="navbar">
+        <div className="nav-container">
+          <div className="logo">
+            <div className="logo-icon">J</div>
+            <span>JobFinder</span>
+          </div>
+
+          <div className="nav-links">
+            <a href="#jobs">Find Jobs</a>
+            <a href="#profile">Create Profile</a>
+            <button
               className="nav-button"
               onClick={() =>
                 document
@@ -228,27 +239,103 @@ function App() {
               }
             >
               Get Started
-            </button> &gt; </div> &gt; </div> &gt; </nav> &gt; <section className="hero"> &gt; <div className="hero-content"> &gt; <div className="hero-badge"> &gt; <span>âœ¦</span>
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <section className="hero">
+        <div className="hero-content">
+          <div className="hero-badge">
+            <span>✦</span>
             Smart job matching for freshers
-          </div> &gt; <h1>
+          </div>
+
+          <h1>
             Find a job that
-            <br /> &gt; <span>matches you.</span> &gt; </h1> &gt; <p>
+            <br />
+            <span>matches you.</span>
+          </h1>
+
+          <p>
             Create your profile, add your skills and discover
             job opportunities that match your role and location.
-          </p> &gt; <div className="hero-stats"> &gt; <div> &gt; <strong>3</strong> &gt; <span>Companies</span> &gt; </div> &gt; <div> &gt; <strong>100%</strong> &gt; <span>Skill Based</span> &gt; </div> &gt; <div> &gt; <strong>24/7</strong> &gt; <span>Job Updates</span> &gt; </div> &gt; </div> &gt; </div> &gt; <div className="hero-decoration"> &gt; <div className="floating-card card-one"> &gt; <span>âœ“</span>
+          </p>
+
+          <div className="hero-stats">
+            <div>
+              <strong>3</strong>
+              <span>Companies</span>
+            </div>
+
+            <div>
+              <strong>100%</strong>
+              <span>Skill Based</span>
+            </div>
+
+            <div>
+              <strong>24/7</strong>
+              <span>Job Updates</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="hero-decoration">
+          <div className="floating-card card-one">
+            <span>✓</span>
             Skills matched
-          </div> &gt; <div className="floating-card card-two"> &gt; <span>â—</span>
+          </div>
+
+          <div className="floating-card card-two">
+            <span>●</span>
             New opportunity
-          </div> &gt; <div className="hero-circle"> &gt; <div className="hero-circle-inner"> &gt; <span>J</span> &gt; </div> &gt; </div> &gt; </div> &gt; </section> &gt; <section className="profile-section" id="profile"> &gt; <div className="section-heading"> &gt; <div> &gt; <span className="section-label">YOUR PROFILE</span> &gt; <h2>Tell us about yourself</h2> &gt; <p>
+          </div>
+
+          <div className="hero-circle">
+            <div className="hero-circle-inner">
+              <span>J</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="profile-section" id="profile">
+        <div className="section-heading">
+          <div>
+            <span className="section-label">YOUR PROFILE</span>
+            <h2>Tell us about yourself</h2>
+            <p>
               We'll use these details to find relevant opportunities for you.
-            </p> &gt; </div> &gt; </div> &gt; <div className="profile-card"> &gt; <div className="profile-card-top"> &gt; <div className="profile-icon">ðŸ‘¤</div> &gt; <div> &gt; <h3>Create Your Job Profile</h3> &gt; <p>
+            </p>
+          </div>
+        </div>
+
+        <div className="profile-card">
+          <div className="profile-card-top">
+            <div className="profile-icon">👤</div>
+
+            <div>
+              <h3>Create Your Job Profile</h3>
+              <p>
                 No account required. Just enter your details and find jobs.
-              </p> &gt; </div> &gt; </div> &gt; <div className="form-grid"> &gt; <div className="form-group"> &gt; <label>Your Name</label> &gt; <input
+              </p>
+            </div>
+          </div>
+
+          <div className="form-grid">
+            <div className="form-group">
+              <label>Your Name</label>
+              <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Adwait Mulay"
-              /> &gt; </div> &gt; <div className="form-group"> &gt; <label>Preferred Location</label> &gt; <select
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Preferred Location</label>
+              <select
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 disabled={filtersLoading}
@@ -258,19 +345,30 @@ function App() {
                     {item}
                   </option>
                 ))}
-              </select> &gt; </div> &gt; <div className="form-group" ref={skillsRef}> &gt; <label>Your Skills</label> &gt; <button
+              </select>
+            </div>
+
+            <div className="form-group" ref={skillsRef}>
+              <label>Your Skills</label>
+
+              <button
                 type="button"
                 className={`custom-select ${
                   skillsOpen ? "custom-select-open" : ""
                 }`}
                 onClick={() => setSkillsOpen((value) => !value)}
                 disabled={filtersLoading}
-              > &gt; <span className={skills.length ? "selected-value" : "placeholder-value"}>
+              >
+                <span className={skills.length ? "selected-value" : "placeholder-value"}>
                   {filtersLoading ? "Loading skills..." : selectedSkillsText}
-                </span> &gt; <span className="select-arrow">â–¼</span> &gt; </button>
+                </span>
+                <span className="select-arrow">▼</span>
+              </button>
 
               {skillsOpen && (
-                <div className="skills-dropdown"> &gt; <div className="skills-dropdown-header"> &gt; <span>Relevant skills</span>
+                <div className="skills-dropdown">
+                  <div className="skills-dropdown-header">
+                    <span>Relevant skills</span>
                     {skills.length > 0 && (
                       <button
                         type="button"
@@ -285,21 +383,40 @@ function App() {
                     <label
                       className="skill-option"
                       key={skill}
-                    > &gt; <input
+                    >
+                      <input
                         type="checkbox"
                         checked={skills.includes(skill)}
                         onChange={() => toggleSkill(skill)}
-                      /> &gt; <span>{skill}</span> &gt; </label>
+                      />
+                      <span>{skill}</span>
+                    </label>
                   ))}
                 </div>
               )}
 
               <small>
                 Select one or more relevant skills
-              </small> &gt; </div> &gt; <div className="form-group"> &gt; <label>Company</label> &gt; <select
+              </small>
+            </div>
+
+            <div className="form-group">
+              <label>Company</label>
+              <select
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
-              > &gt; <option value="All Companies">All Companies</option> &gt; <option value="Infosys">Infosys</option> &gt; <option value="TCS">TCS</option> &gt; <option value="Wipro">Wipro</option> &gt; </select> &gt; <small>Select the company you want to see</small> &gt; </div> &gt; <div className="form-group"> &gt; <label>Job Role</label> &gt; <select
+              >
+                <option value="All Companies">All Companies</option>
+                <option value="Infosys">Infosys</option>
+                <option value="TCS">TCS</option>
+                <option value="Wipro">Wipro</option>
+              </select>
+              <small>Select the company you want to see</small>
+            </div>
+            <div className="form-group">
+              <label>Job Role</label>
+
+              <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
               >
@@ -308,81 +425,173 @@ function App() {
                     {item}
                   </option>
                 ))}
-              </select> &gt; <small>
+              </select>
+
+              <small>
                 Type or select a software / IT role
-              </small> &gt; </div> &gt; </div> &gt; <button
+              </small>
+            </div>
+          </div>
+
+          <button
             className="find-button"
             onClick={findJobs}
             disabled={loading}
           >
             {loading ? (
-              <> &gt; <span className="spinner"> &gt; </span>
+              <>
+                <span className="spinner"></span>
                 Finding matching jobs...
               </>
             ) : (
               <>
                 Find Matching Jobs
-                <span>â†’</span> &gt; </>
+                <span>→</span>
+              </>
             )}
-          </button> &gt; </div> &gt; </section>
+          </button>
+        </div>
+      </section>
 
       {searched && (
-        <section className="jobs-section" id="jobs"> &gt; <div className="results-header"> &gt; <div> &gt; <span className="section-label">JOB RESULTS</span> &gt; <h2>Recommended Jobs</h2> &gt; <p>
+        <section className="jobs-section" id="jobs">
+          <div className="results-header">
+            <div>
+              <span className="section-label">JOB RESULTS</span>
+              <h2>Recommended Jobs</h2>
+              <p>
                 Opportunities matched with your profile.
-              </p> &gt; </div> &gt; <div className="result-count">
+              </p>
+            </div>
+
+            <div className="result-count">
               {jobs.length} Jobs Found
-            </div> &gt; </div>
+            </div>
+          </div>
 
           {jobs.length === 0 ? (
-            <div className="empty-state"> &gt; <div className="empty-icon">âŒ•</div> &gt; <h3>No matching jobs found</h3> &gt; <p>
+            <div className="empty-state">
+              <div className="empty-icon">⌕</div>
+              <h3>No matching jobs found</h3>
+              <p>
                 Try adding more skills or changing your preferred role
                 or location.
-              </p> &gt; </div>
+              </p>
+            </div>
           ) : (
             <div className="jobs-grid">
               {jobs.map((job) => (
-                <div className="job-card" key={job._id}> &gt; <div className="job-card-header"> &gt; <div className="company-logo">
+                <div className="job-card" key={job._id}>
+                  <div className="job-card-header">
+                    <div className="company-logo">
                       {job.company?.charAt(0)}
-                    </div> &gt; <div className="match-badge">
+                    </div>
+
+                    <div className="match-badge">
                       {job.matchScore}% Match
-                    </div> &gt; </div> &gt; <div className="job-content"> &gt; <h3>{job.title}</h3> &gt; <div className="company-name">
+                    </div>
+                  </div>
+
+                  <div className="job-content">
+                    <h3>{job.title}</h3>
+
+                    <div className="company-name">
                       {job.company}
-                    </div> &gt; <div className="job-details"> &gt; <span>Location: {job.location}</span> &gt; <span>Type: {job.jobType}</span> &gt; </div> &gt; <p className="job-description">
+                    </div>
+
+                    <div className="job-details">
+                      <span>📍 {job.location}</span>
+                      <span>💼 {job.jobType}</span>
+                    </div>
+
+                    <p className="job-description">
                       {cleanJobDescription(job.description)}
-                    </p> &gt; <div className="skills">
+                    </p>
+
+                    <div className="skills">
                       {(job.skills || []).map((skill, index) => (
                         <span key={`${skill}-${index}`}>
                           {skill}
                         </span>
                       ))}
-                    </div> &gt; </div> &gt; <div className="job-card-footer"> &gt; <span className="role-text">
+                    </div>
+                  </div>
+
+                  <div className="job-card-footer">
+                    <span className="role-text">
                       {job.role}
-                    </span> &gt; <a
+                    </span>
+
+                    <a
                       href={job.jobUrl}
                       target="_blank"
                       rel="noreferrer"
                       className="apply-button"
                     >
-                      View Job &gt;</a> &gt; </div> &gt; </div>
+                      View Job →
+                    </a>
+                  </div>
+                </div>
               ))}
             </div>
           )}
         </section>
       )}
 
-      <section className="how-section"> &gt; <div className="section-heading center"> &gt; <span className="section-label">HOW IT WORKS</span> &gt; <h2>Finding your next job is simple</h2> &gt; <p>
+      <section className="how-section">
+        <div className="section-heading center">
+          <span className="section-label">HOW IT WORKS</span>
+          <h2>Finding your next job is simple</h2>
+          <p>
             Three simple steps to discover relevant opportunities.
-          </p> &gt; </div> &gt; <div className="steps"> &gt; <div className="step"> &gt; <div className="step-number">01</div> &gt; <h3>Create Profile</h3> &gt; <p>
+          </p>
+        </div>
+
+        <div className="steps">
+          <div className="step">
+            <div className="step-number">01</div>
+            <h3>Create Profile</h3>
+            <p>
               Add your skills, preferred role and location.
-            </p> &gt; </div> &gt; <div className="step"> &gt; <div className="step-number">02</div> &gt; <h3>Get Matched</h3> &gt; <p>
+            </p>
+          </div>
+
+          <div className="step">
+            <div className="step-number">02</div>
+            <h3>Get Matched</h3>
+            <p>
               Our system compares your profile with available jobs.
-            </p> &gt; </div> &gt; <div className="step"> &gt; <div className="step-number">03</div> &gt; <h3>Apply</h3> &gt; <p>
+            </p>
+          </div>
+
+          <div className="step">
+            <div className="step-number">03</div>
+            <h3>Apply</h3>
+            <p>
               Explore matching opportunities and apply directly.
-            </p> &gt; </div> &gt; </div> &gt; </section> &gt; <footer> &gt; <div className="footer-content"> &gt; <div className="logo"> &gt; <div className="logo-icon">J</div> &gt; <span>JobFinder</span> &gt; </div> &gt; <p>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <div className="footer-content">
+          <div className="logo">
+            <div className="logo-icon">J</div>
+            <span>JobFinder</span>
+          </div>
+
+          <p>
             Helping freshers discover better job opportunities.
-          </p> &gt; <span className="footer-copy">
-            Â© 2026 JobFinder
-          </span> &gt; </div> &gt; </footer> &gt; <style>{`
+          </p>
+
+          <span className="footer-copy">
+            © 2026 JobFinder
+          </span>
+        </div>
+      </footer>
+
+      <style>{`
         * {
           box-sizing: border-box;
           margin: 0;
@@ -1161,10 +1370,9 @@ function App() {
             top: 140px;
           }
         }
-      `}</style> &gt; </div>
+      `}</style>
+    </div>
   );
 }
 
 export default App;
-
-
